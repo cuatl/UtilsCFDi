@@ -1,7 +1,8 @@
 <?php
    /*
-   * lee información de CFDi y genera salida en csv delimitado por tabs
-   * @ToRo 2016-11-15 https://tar.mx
+   * lee información de CFDi y genera salida en csv delimitado por comas
+   * (configurable), útil para generar reportes para excel.
+   * @ToRo 2016-11-15 https://tar.mx/tema/facturacion-electronica.html
    */
    // Configuración
    $path="directorio/facturas/"; // el directorio donde se tienen los archivos XML
@@ -13,6 +14,7 @@
    //
    //
    // lee 3 niveles de profundidad
+   // d1/d2/d3
    //
    $pathd=dir($path);
    $t=0;
@@ -37,7 +39,9 @@
       }
    }
    $pathd->close();
+   //
    $no=strlen($t)+1;
+   //encabezados
    $resumend  = "FACTURA".$separador."FOLIO FISCAL".$separador."SUBTOTAL".$separador."TOTAL".$separador."FECHA";
    $resumend .= $separador."MÉTODO PAGO";
    $resumend .= $separador."EMITE RFC".$separador."EMITE RAZÓN".$separador."RECEPTOR RFC".$separador."RECEPTOR RAZÓN";
