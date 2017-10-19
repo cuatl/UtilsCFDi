@@ -5,7 +5,9 @@
    * @ToRo 2016-11-15 https://tar.mx/tema/facturacion-electronica.html
    */
    // Configuración
-   $path="directorio/facturas/"; // el directorio donde se tienen los archivos XML
+   if(isset($argv[1]) && is_dir($argv[1])) $path = $argv[1];
+   else $path="directorio/facturas"; // el directorio donde se tienen los archivos XML
+   if(!is_dir($path)) die("Estableza la ruta de sus XML o ejecute php ".$argv[0]." DIRECTORIO\n".$path." no existe\n\n");
    $archivo= "resumen.csv";      //nombre del archivo a generar
    //
    $saltolinea = "\r\n";         //para windows usar \r\n, para mac o linux \n
