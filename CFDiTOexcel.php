@@ -9,7 +9,7 @@
    require_once("catalogos.php");//catálogo de conceptos CFD 3.2/3.3
    if(isset($argv[1]) && is_dir($argv[1])) $path = $argv[1];
    else $path="facturas/";       // el directorio donde se tienen los archivos XML
-   if(!is_dir($path)) die("Estableza la ruta de sus XML o ejecute php ".$argv[0]." DIRECTORIO\n".$path." no existe\n\n");
+   if(!is_dir($path)) die("Estableza la ruta de sus XML o ejecute php ".$argv[0]." DIRECTORIO\n - ".$path." no existe\n\n");
    $archivo= "resumen.csv";      // nombre del archivo a generar
    //
    $salto = "\r\n";              // para windows usar \r\n, para mac o linux \n
@@ -43,6 +43,7 @@
    //encabezado csv
    $salida = null;
    foreach($csv AS $k=>$v) { $salida .= $k.$sep; }
+   $salida .= "Concepto 1";
    $salida .= $salto;
    //
    if(!empty($archivos)) {
@@ -57,7 +58,8 @@
                printf("%".$no."d",$i);
                echo " ".$dir.$file." ";
                foreach($csv AS $a=>$b) {
-                  if(is_array($b)) {
+                  if(empty($b)) continue;
+                  elseif(is_array($b)) {
                      foreach($b AS $z) { $salida .= $xml->{$z}; }
                   } elseif(preg_match("/\//",$b)) {
                      $tmp = explode("/",$b);
@@ -67,29 +69,29 @@
                   }
                   $salida .= $sep;
                }
-               foreach($csvimpuestos AS $a=>$b) {
-                  if(isset($xml->{$a})) {
-                     foreach($xml->{$a} AS $x=>$y) {
-                     }
-                  }
-               }
-               die($salida.$salto);
-               //$salida .= $xml->serie.$xml->folio.$sep.$xml->id.$sep.$xml->subtotal.$sep.$xml->total.$sep;
+               $tmp = 0; //impuestos trasladados
+               if(isset($xml->impuestos->trasladados)) {
+                  foreach($xml->impuestos->trasladados AS $imp) { $tmp += $imp->importe; }
+                  $salida .= $tmp.$sep;
+               } else $salida .= "0".$sep;
+               $tmp = 0; //impuestos retenidos
+               if(isset($xml->impuestos->retenidos)) {
+                  foreach($xml->impuestos->retenidos AS $imp) { $tmp += $imp->importe; }
+                  $salida .= $tmp.$sep;
+               } else $salida .= "0".$sep;
+               //vamos a tomar nadamás un concepto de referencia
+               $salida .= str_replace(","," ",$xml->conceptos[1]->descripcion);
                $salida .= $salto;
                echo " ok!\n";
             }
          }
       }
    }
-   echo $salida;
-   //print_r($xml);
-   /* activar 
    if(file_put_contents($archivo,$salida)) {
       echo $salto.$salto."Se almacenó el archivo $archivo".$salto.$salto;
    } else {
       echo $salto."NO SE PUDO ALMACENAR EL ARCHIVO $archivo, verifique que pueda escribir ahí.".$salto;
    }
-   */
    /*
    * lee el cfdi y regresa un arreglo de datos.
    * v3.2 y v3.3
@@ -159,8 +161,8 @@
       $datos->conceptos = $losconceptos;
       $tfd = $root->getElementsByTagName('TimbreFiscalDigital')->item(0);
       $datos->id = $tfd->getAttribute('UUID');
-      $datos->fechatimbrado = date('Y-m-d H:i:s',strtotime($tfd->getAttribute('FechaTimbrado')));
-      $datos->fecha = date('Y-m-d H:i:s',strtotime($datos->fecha));
+      $datos->fechatimbrado = date('Y-m-d',strtotime($tfd->getAttribute('FechaTimbrado')));
+      $datos->fecha = date('Y-m-d',strtotime($datos->fecha));
       //
       unset($tfd,$root,$imp,$tmp);
       return $datos;
