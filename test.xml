@@ -1,0 +1,29 @@
+<cfdi:Comprobante xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd" LugarExpedicion="27014" MetodoPago="PUE" TipoDeComprobante="I" Total="13689.75" Moneda="MXN" Certificado="CERTIFICADOMIIGXDCCBES..." SubTotal="14359.87" NoCertificado="0000100000040303XXXX" FormaPago="03" Sello="SELLO1XRhoMErTnEtiBmKlqdyQXg==" Fecha="2017-11-27T12:21:42" Version="3.3" xmlns:cfdi="http://www.sat.gob.mx/cfd/3">
+  <cfdi:Emisor Rfc="XXXXXXXXXXXXX" Nombre="JORGE M" RegimenFiscal="612" />
+  <cfdi:Receptor Rfc="RRRRRRRRRRRR" Nombre="S.A. DE C.V." UsoCFDI="G03" />
+  <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="81112200" Cantidad="1" ClaveUnidad="ACT" Descripcion="SERVICIOS PROFESIONALES" ValorUnitario="14359.87" Importe="14359.87">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="14359.87" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="2297.58" />
+        </cfdi:Traslados>
+        <cfdi:Retenciones>
+          <cfdi:Retencion Base="14359.87" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.106666" Importe="1531.71" />
+          <cfdi:Retencion Base="14359.87" Impuesto="001" TipoFactor="Tasa" TasaOCuota="0.100000" Importe="1435.99" />
+        </cfdi:Retenciones>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+  </cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosRetenidos="2967.70" TotalImpuestosTrasladados="2297.58">
+    <cfdi:Retenciones>
+      <cfdi:Retencion Impuesto="002" Importe="1531.71" />
+      <cfdi:Retencion Impuesto="001" Importe="1435.99" />
+    </cfdi:Retenciones>
+    <cfdi:Traslados>
+      <cfdi:Traslado Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="2297.58" />
+    </cfdi:Traslados>
+  </cfdi:Impuestos>
+  <cfdi:Complemento>
+  <tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" xsi:schemaLocation="http://www.sat.gob.mx/TimbreFiscalDigital http://www.sat.gob.mx/sitio_internet/cfd/TimbreFiscalDigital/TimbreFiscalDigitalv11.xsd" Version="1.1" UUID="AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE" FechaTimbrado="2017-11-27T12:26:41" RfcProvCertif="SAT970701NN3" SelloCFD="SELLOCFDb7lT/QMh/zfGEgMppj==" NoCertificadoSAT="00001000000403258748" SelloSAT="SELLOSATVp/FDj0kRWr8kaxHfw==" />
+  </cfdi:Complemento>
+</cfdi:Comprobante>

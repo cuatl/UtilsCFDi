@@ -114,8 +114,8 @@
       $xml2 = new DOMDocument();
       $datos->version = $ver = ($root->getAttribute('Version') != null) ? $root->getAttribute('Version') : $root->getAttribute('version');
       // cabeceras
-   foreach($cabeza["3.3"] AS $tag=>$x) {
-      $datos->{$tag} = (string) $root->getAttribute($cabeza[$ver][$tag]);
+      foreach($cabeza["3.3"] AS $tag=>$x) {
+         $datos->{$tag} = (string) $root->getAttribute($cabeza[$ver][$tag]);
       }
       // emisor
       $emite = $root->getElementsByTagName('Emisor')->item(0);
