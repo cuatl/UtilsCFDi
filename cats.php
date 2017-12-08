@@ -61,7 +61,7 @@ $CAT->cabeza = [
    ];
 /* }}} */
 //emisor
-$emisor = [
+$CAT->emisor = [
    '3.2' => [
       'rfc'        => 'rfc',
       'nombre'     => 'nombre',
@@ -74,7 +74,7 @@ $emisor = [
    ]
 ];
 //receptor
-$receptor = [
+$CAT->receptor = [
    '3.2' => [
       'rfc'        => 'rfc',
       'nombre'     => 'nombre',

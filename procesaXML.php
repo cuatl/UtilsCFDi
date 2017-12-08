@@ -35,6 +35,18 @@
          foreach($this->cat->cabeza["3.3"] AS $tag=>$x) {
             $datos->{$tag} = (string) $root->getAttribute($this->cat->cabeza[$ver][$tag]);
          }
+         // emisor
+         $emite = $root->getElementsByTagName('Emisor')->item(0);
+         $datos->emisor = new stdclass;
+         foreach($this->cat->emisor["3.3"] AS $tag=>$x) {
+            $datos->emisor->{$tag} = (string) $emite->getAttribute($this->cat->emisor[$ver][$tag]);
+         }
+         // receptor
+         $recibe= $root->getElementsByTagName('Receptor')->item(0);
+         $datos->receptor = new stdclass;
+         foreach($this->cat->receptor["3.3"] AS $tag=>$x) {
+            $datos->receptor->{$tag} = (string) $recibe->getAttribute($this->cat->receptor[$ver][$tag]);
+         }
          return $datos;
       }
    }
