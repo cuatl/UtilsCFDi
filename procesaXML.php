@@ -102,7 +102,7 @@
    }
    /* ejemplo */
    if(isset($argv[1]) && isset($argv[1]) == 'TRUE') {
-      $xml= file_get_contents("OO-94525.xml");
+      $xml= file_get_contents("WW-9434.xml");
       $cfdi = new cfdi();
       $cfdi->xml = $xml;
       $data = $cfdi->run();

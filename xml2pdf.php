@@ -26,52 +26,46 @@
          // Line break
          $this->Ln(1);
          //emite
-         $ancho=60;
+         $ancho=105;
          $this->setTextColor(0,0,0);
-         $this->SetFont('Helvetica','B',8);
+         $this->SetFont('Helvetica','B',10);
          //primera fila
          $this->Cell($ancho,5,strtoupper(utf8_decode($d->emisor->nombre)),0,0,null,0);
          $this->SetFont('Helvetica','',7);
-         $this->Cell($ancho-5);
-         $this->Cell(20,5,utf8_decode('Folio fiscal:'),'B',0,'R');
+         $this->Cell(30,5,utf8_decode('Folio fiscal:'),'B',0,'R');
          $this->SetFont('Helvetica','B',8);
          $this->SetTextColor(153,0,0);
-         $this->Cell($ancho,5,strtoupper($d->id),'B',0,'L');
+         $this->Cell(null,5,strtoupper($d->id),'B',0,'L');
          $this->ln();
          //segunda fila
          $this->SetFont('Helvetica','',7);
          $this->SetTextColor(0,0,0);
          $this->Cell(10,5,"RFC",0,0,null,0);
          $this->SetFont('Helvetica','B',8);
-         $this->Cell($ancho-5,5,utf8_decode($d->emisor->rfc),0,0,null,0);
+         $this->Cell($ancho-10,5,utf8_decode($d->emisor->rfc),0,0,null,0);
          $this->SetFont('Helvetica','',7);
-         $this->Cell($ancho-10);
-         $this->Cell(25,5,utf8_decode('No. de serie del CSD:'),'B',0,'R');
-         $this->Cell($ancho-5,5,$d->nocertifica,'B',0,'L');
+         $this->Cell(30,5,utf8_decode('No. de serie del CSD:'),'B',0,'R');
+         $this->Cell(null,5,$d->nocertifica,'B',0,'L');
          $this->ln();
          //tercera fila
          $this->Cell($ancho,5,utf8_decode("Av. Matamoros 1056 Pte"),0,0,null,0);
-         $this->Cell($ancho-5);
-         $this->Cell(25,5,utf8_decode('Fecha/hora emisión:'),'B',0,'R');
-         $this->Cell($ancho-5,5,utf8_decode($d->fecha),'B',0,null,0);
+         $this->Cell(30,5,utf8_decode('Fecha/hora emisión:'),'B',0,'R');
+         $this->Cell(null,5,utf8_decode($d->fecha),'B',0,null,0);
          $this->ln();
          //cuarta fila
          $this->Cell($ancho,5,utf8_decode("Col. Centro, CP. 27000"),0,0,null,0);
-         $this->Cell($ancho-5);
-         $this->Cell(25,5,utf8_decode('Lugar de expedición:'),'B',0,'R');
-         $this->Cell($ancho-5,5,utf8_decode($d->lugar),'B',0,null,0);
+         $this->Cell(30,5,utf8_decode('Lugar de expedición:'),'B',0,'R');
+         $this->Cell(null,5,utf8_decode($d->lugar),'B',0,null,0);
          $this->ln();
          //quinta línea
          $this->Cell($ancho,5,utf8_decode("Torreón, Coahuila, México"),0,0,null,0);
-         $this->Cell($ancho-5);
-         $this->Cell(25,5,utf8_decode('Fecha/hora timbrado:'),'B',0,'R');
-         $this->Cell($ancho-5,5,utf8_decode($d->fechatimbrado),'B',0,null,0);
+         $this->Cell(30,5,utf8_decode('Fecha/hora timbrado:'),'B',0,'R');
+         $this->Cell(null,5,utf8_decode($d->fechatimbrado),'B',0,null,0);
          $this->ln();
          //sexta línea
          $this->Cell($ancho,5,utf8_decode("Régimen fiscal ").$d->emisor->regimen,0,0,null,0);
-         $this->Cell($ancho-5);
-         $this->Cell(25,5,utf8_decode('Efecto de comprobante:'),'B',0,'R');
-         $this->Cell($ancho-5,5,utf8_decode($d->tipo),'B',0,null,0);
+         $this->Cell(30,5,utf8_decode('Efecto de comprobante:'),'B',0,'R');
+         $this->Cell(null,5,utf8_decode($d->tipo),'B',0,null,0);
          $this->ln(8);
          //receptor
          $this->SetFillColor(247,247,249);
@@ -100,7 +94,7 @@
       }
    }
    //procesamos XML
-   $xml= file_get_contents("OO-94525.xml");
+   $xml= file_get_contents("WW-9434.xml");
    $cfdi = new cfdi();
    $cfdi->xml = $xml;
    $data = $cfdi->run();
@@ -114,13 +108,14 @@
    // body
    $pdf->ln();
    $pdf->SetFillColor(247,247,249);
+   $pdf->SetFillColor(239,249,255);
    $pdf->SetDrawColor(80,96,119);
    $pdf->SetFont('Helvetica','',7);
-   $pdf->Cell(null,5,utf8_decode("CONCEPTOS"),'T',1,'C',1);
-   $a=4;
+   $pdf->Cell(null,5,utf8_decode("C O N C E P T O S"),'T',1,'C',1);
+   $a=5;
    //cabecera conceptos
    $pdf->SetFont('Helvetica','B',6);
-   $pdf->Cell(16,$a,utf8_decode('Clave producto'),'B',0,'C',1);
+   $pdf->Cell(18,$a,utf8_decode('Clave producto'),'B',0,'C',1);
    $pdf->Cell(15,$a,utf8_decode('Cantidad'),'B',0,'R',1);
    $pdf->Cell(15,$a,utf8_decode('Clave Unidad'),'B',0,'R',1);
    $pdf->Cell(17,$a,utf8_decode('Unidad'),'B',0,'R',1);
@@ -129,8 +124,10 @@
    $pdf->Cell(null,$a,utf8_decode('Descripción'),'B',0,'C',1);
    $pdf->ln();
    $pdf->SetFont('Helvetica','',6);
+   $impuestos=0;
    foreach($data->conceptos AS $k) {
-      $pdf->Cell(16,$a,utf8_decode($k->clave),"R",0);
+      $pdf->setTextColor(0,0,0);
+      $pdf->Cell(18,$a,utf8_decode($k->clave),"R",0,'C');
       $pdf->Cell(15,$a,number_format($k->cantidad,2),"R",0,'R');
       $pdf->Cell(15,$a,utf8_decode($k->unidad),"R",0,'R');
       $pdf->Cell(17,$a,utf8_decode($k->lunidad),"R",0,'R');
@@ -138,28 +135,52 @@
       $pdf->Cell(17,$a,"$".number_format($k->valorunitario,2),"R",0,'R');
       $pdf->multicell(100,$a,utf8_decode($k->descripcion),0);
       if(isset($k->trasladados) && !empty($k->trasladados)) {
+         $pdf->setTextColor(102,102,102);
          foreach($k->trasladados AS $imp) {
-            $pdf->Cell(40,5,utf8_decode("IMPUESTO TRASLADADO"),0,0,'R',1);
-            $pdf->Cell(30,5,utf8_decode("Base: $".number_format($imp->base,2)),0,0,null,1);
-            $pdf->Cell(30,5,utf8_decode("Impuesto: ".$imp->impuesto),0,0,null,1);
-            $pdf->Cell(30,5,utf8_decode("Tipo o factor: ".$imp->factor),0,0,null,1);
-            $pdf->Cell(30,5,utf8_decode("Tasa o cuota: ".$imp->tasacuota),0,0,null,1);
-            $pdf->Cell(null,5,utf8_decode("Importe: ".number_format($imp->importe,2)),0,0,null,1);
+            $pdf->Cell(40,$a,utf8_decode("IMPUESTO TRASLADADO"),0,0,'R',1);
+            $pdf->Cell(30,$a,utf8_decode("Base: $".number_format($imp->base,2)),0,0,null,1);
+            $pdf->Cell(30,$a,utf8_decode("Impuesto: ".$imp->impuesto),0,0,null,1);
+            $pdf->Cell(30,$a,utf8_decode("Tipo o factor: ".$imp->factor),0,0,null,1);
+            $pdf->Cell(30,$a,utf8_decode("Tasa o cuota: ".$imp->tasacuota),0,0,null,1);
+            $pdf->Cell(null,$a,utf8_decode("Importe: $".number_format($imp->importe,2)),0,0,null,1);
+            $impuestos += $imp->importe;
             $pdf->ln();
          }
-      }
-      $pdf->ln();
+      } else $pdf->ln();
    }
-   /* [1] => stdClass Object
-   (
-      [impuesto] => 002
-      [importe] => 2097.56
-      [base] => 13109.76
-      [factor] => Tasa
-      [tasacuota] => 0.160000
-   )
-   */
    $pdf->ln();
+   $pdf->ln();
+   /// moneda, totales
+   //moneda , subtotal
+   $pdf->Cell(25,$a,'Moneda:',0,0,'R');
+   $pdf->Cell(40,$a,utf8_decode($data->moneda),0,0);
+   $pdf->Cell(70);
+   $pdf->Cell(40,$a,utf8_decode("Subtotal:"),0,0,'R');
+   $pdf->Cell(null,$a,utf8_decode("$".number_format($data->subtotal,2)),'B',0,'R');
+   $pdf->ln();
+   //forma de pago, impuestos
+   $pdf->Cell(25,$a,'Forma de pago:',0,0,'R');
+   $pdf->Cell(40,$a,utf8_decode($data->formapago),0,0);
+   if(isset($data->conceptos[1]->trasladados[1])) {
+      $pdf->Cell(70);
+      $pdf->Cell(null,$a,utf8_decode("Impuestos trasladados"),0,0,'C',1);
+   }
+   $pdf->ln();
+   // método de pago
+   $pdf->Cell(25,$a,utf8_decode('Método de pago:'),0,0,'R');
+   $pdf->Cell(40,$a,utf8_decode($data->metodopago),0,0);
+   if(isset($data->conceptos[1]->trasladados[1])) {
+      $pdf->Cell(70);
+      $pdf->Cell(40,$a,utf8_decode("IVA ".$data->conceptos[1]->trasladados[1]->tasacuota."%:"),0,0,'R');
+      $pdf->Cell(null,$a,utf8_decode("$".number_format($impuestos,2)),'B',0,'R');
+   }
+   $pdf->ln();
+   // total
+   $pdf->Cell(25+40+70);
+   $pdf->Cell(40,$a,utf8_decode("TOTAL:"),0,0,'R');
+   $pdf->SetFont('Helvetica','B',8);
+   $pdf->Cell(null,$a,utf8_decode("$".number_format($data->total,2)),'B',0,'R');
+   $pdf->SetFont('Helvetica','',6);
    //
    // end body
    //
