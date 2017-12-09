@@ -47,12 +47,82 @@
          foreach($this->cat->receptor["3.3"] AS $tag=>$x) {
             $datos->receptor->{$tag} = (string) $recibe->getAttribute($this->cat->receptor[$ver][$tag]);
          }
+         // impuestos
+         /*
+         $impuesto = new stdclass;
+         $impuesto->trasladados = 
+         $impuesto->retenidos = [];
+         $imp= $root->getElementsByTagName('Impuestos');
+         foreach(['Traslado' => 'trasladados','Retencion' => 'retenidos'] AS $x=>$y) {
+            $traslado = $imp->item(0)->getElementsByTagName($x); $i = 0;
+            foreach($traslado as $t) {
+               $i++; $impuesto->{$y}[$i] = new stdclass;
+               foreach($this->cat->impuestos["3.3"] AS $a=>$b) {
+                  if(isset($this->cat->impuestos[$ver][$a])) $impuesto->{$y}[$i]->{$a} = $t->getAttribute($this->cat->impuestos[$ver][$a]);
+               }
+            }
+         }
+         $datos->impuestos = $impuesto;
+         */
+         // conceptos
+         $losconceptos=[];
+         $concepto= $root->getElementsByTagName('Concepto');
+         $i=0;
+         foreach($concepto AS $t) {
+            $i++; 
+            $losconceptos[$i] = new stdclass;
+            foreach($this->cat->conceptos["3.3"] AS $a=>$b) {
+               if(isset($this->cat->conceptos[$ver][$a])) {
+                  $losconceptos[$i]->{$a} = $t->getAttribute($this->cat->conceptos[$ver][$a]);
+               }
+            }
+            foreach(['Traslado' => 'trasladados','Retencion' => 'retenidos'] AS $x=>$y) {
+               $traslado = $concepto->item(0)->getElementsByTagName($x); 
+               $ii = 0;
+               foreach($traslado as $t) {
+                  $ii++; 
+                  $losconceptos[$i]->{$y}[$ii] = new stdclass;
+                  foreach($this->cat->ci["3.3"] AS $a=>$b) {
+                     if(isset($this->cat->ci[$ver][$a])) {
+                        $losconceptos[$i]->{$y}[$ii]->{$a} = $t->getAttribute($this->cat->ci[$ver][$a]);
+                     }
+                  }
+               }
+            }
+         }
+         $datos->conceptos = $losconceptos;
+         //impuestos
+         /*
+         $imp= $root->getElementsByTagName('Impuestos');
+         $impuestos = new stdclass;
+         foreach($imp AS $t) {
+            $i=0;
+            foreach(["TotalImpuestosRetenidos","TotalImpuestosTrasladados"]AS $a) {
+               $impuestos->{$a} = $t->getAttribute($a);
+               foreach(['Traslado' => 'trasladados','Retencion' => 'retenidos'] AS $x=>$y) {
+                  $traslado = $imp->item(0)->getElementsByTagName($x); 
+                  $ii = 0;
+                  foreach($traslado as $t) {
+                     $ii++; 
+                     $impuestos->{$y}[$ii] = new stdclass;
+                     foreach($this->cat->ci["3.3"] AS $a=>$b) {
+                        if(isset($this->cat->ci[$ver][$a])) {
+                           $impuestos->{$y}[$ii]->{$a} = $t->getAttribute($this->cat->ci[$ver][$a]);
+                        }
+                     }
+                  }
+               }
+            }
+         }
+         */
          return $datos;
       }
    }
    /* ejemplo */
-   $xml= file_get_contents("test.xml");
-   $cfdi = new cfdi();
-   $cfdi->xml = $xml;
-   $data = $cfdi->run();
-   print_r($data);
+   if(isset($argv[1]) && isset($argv[1]) == 'TRUE') {
+      $xml= file_get_contents("OO-94525.xml");
+      $cfdi = new cfdi();
+      $cfdi->xml = $xml;
+      $data = $cfdi->run();
+      print_r($data);
+   }

@@ -9,3 +9,6 @@ https://tar.mx/tema/facturacion-electronica.html
 
 Uso: php CFDiTOexcel.php DIRECTORIO 
 -- esto va a generar un archivo llamado resumen.csv
+
+
+en el directorio fpdf181/ está la excelente clase FPDF para generar PDF desde PHP - http://www.fpdf.org/

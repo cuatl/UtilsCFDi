@@ -2,35 +2,11 @@
 //catálogos de estructura de archivo. 
 //ver procesaXML.php
 $CAT =new stdclass;
-$csv = [
-   "Factura"       => ['serie','folio'],
-   "Folio fiscal"  => 'id',
-   "Subtotal"      => 'subtotal',
-   "Total"         => 'total',
-   "CFDi"          => 'version',
-   "Comprobante"   => 'tipo',
-   "Fecha factura" => 'fecha',
-   "Fecha timbrado"=> 'fechatimbrado',
-   "Método de pago"=> 'metodopago',
-   "Lugar"         => 'lugar',
-   "moneda"        => 'moneda',
-    
-   "Emisor RFC"    => 'emisor/rfc',
-   "Emisor Razón" => 'emisor/nombre',
-   "Régimen fiscal"=> 'emisor/regimen',
-
-   "Receptor RFC"  => 'receptor/rfc',
-   "Receptor Razón"=>'receptor/nombre',
-   "Uso CFDi"      => 'receptor/usocfdi',
-
-   "Impuestos Trasladados" => null,
-   "Impuestos Retenidos" => null,
-];
 $csvimpuestos = [
    'trasladados' => [ 'impuesto', 'importe' ],
    'retenidos'   => [ 'impuesto', 'importe' ], //base, factor, tasacuota
 ];
-//cabecera /* {{{ */
+//cabecera 
 $CAT->cabeza = [
    '3.2' => [
       'fecha'      => 'fecha',
@@ -57,9 +33,10 @@ $CAT->cabeza = [
       'certificado'=> 'Certificado',
       'nocertifica'=> 'NoCertificado',
       'sello'      => 'Sello',
+      'condiciones'=> 'CondicionesDePago',
+      'version'    => 'Version',
    ],
    ];
-/* }}} */
 //emisor
 $CAT->emisor = [
    '3.2' => [
@@ -87,7 +64,7 @@ $CAT->receptor = [
    ]
 ];
 //impuestos
-$impuestos = [
+$CAT->impuestos = [
    '3.2' => [
       'impuesto'   => 'impuesto',
       'importe'    => 'importe',
@@ -101,7 +78,7 @@ $impuestos = [
    ],
 ];
 //conceptos
-$conceptos = [
+$CAT->conceptos = [
    "3.2" => [
       "cantidad"   => "cantidad",
       "unidad"     => "unidad",
@@ -117,5 +94,15 @@ $conceptos = [
       "valorunitario"=> "ValorUnitario",
       "importe"    => "Importe",
    ],
+];
+//conceptos impuestos
+$CAT->ci = [
+   "3.3" => [
+      'impuesto'   => 'Impuesto',
+      'importe'    => 'Importe',
+      'base'       => 'Base',
+      'factor'     => 'TipoFactor',
+      'tasacuota'  => 'TasaOCuota',
+   ]
 ];
 //EOF
