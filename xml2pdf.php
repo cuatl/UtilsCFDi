@@ -64,19 +64,20 @@
          $this->ln();
          //sexta línea
          $this->Cell($ancho,5,utf8_decode("Régimen fiscal ").$d->emisor->regimen,0,0,null,0);
-         $this->Cell(30,5,utf8_decode('Efecto de comprobante:'),'B',0,'R');
-         $this->Cell(null,5,utf8_decode($d->tipo),'B',0,null,0);
+         $this->Cell(30,5,utf8_decode('Efecto de comprobante:'),null,0,'R');
+         $this->Cell(null,5,utf8_decode($d->tipo),null,0,null,0);
          $this->ln(8);
          //receptor
-         $this->SetFillColor(247,247,249);
-         $this->SetDrawColor(80,96,119);
+         $this->SetFillColor(255,218,218);
+         //$this->SetDrawColor(80,96,119);
+         $this->SetDrawColor(191,84,84);
          $this->SetFont('Helvetica','',7);
          $this->Cell(null,5,utf8_decode("RECEPTOR DEL COMPROBANTE FISCAL"),'T',0,'C',1);
          $this->ln();
          $this->SetFont('Helvetica','B',9);
-         $this->Cell($ancho,7,utf8_decode("RFC: ").$d->receptor->rfc,'B',0,null,0);
-         $this->Cell($ancho,7,utf8_decode($d->receptor->nombre),'B',0,null,0);
-         $this->Cell(null,7,utf8_decode("Uso de CFDI: ".$d->receptor->usocfdi),'B',0,null,0);
+         $this->Cell(50,7,utf8_decode("RFC: ").$d->receptor->rfc,'B',0,null,1);
+         $this->Cell(110,7,utf8_decode($d->receptor->nombre),'B',0,null,1);
+         $this->Cell(null,7,utf8_decode("Uso de CFDI: ".$d->receptor->usocfdi),'B',0,null,1);
          $this->ln();
       }
       // Pie de página
@@ -123,7 +124,7 @@
    $pdf->Cell(17,$a,utf8_decode('Importe'),'B',0,'R',1);
    $pdf->Cell(null,$a,utf8_decode('Descripción'),'B',0,'C',1);
    $pdf->ln();
-   $pdf->SetFont('Helvetica','',6);
+   $pdf->SetFont('Helvetica','',8);
    $impuestos=0;
    foreach($data->conceptos AS $k) {
       $pdf->setTextColor(0,0,0);
@@ -148,8 +149,7 @@
          }
       } else $pdf->ln();
    }
-   $pdf->ln();
-   $pdf->ln();
+   $pdf->ln(4);
    /// moneda, totales
    //moneda , subtotal
    $pdf->Cell(25,$a,'Moneda:',0,0,'R');
@@ -181,6 +181,20 @@
    $pdf->SetFont('Helvetica','B',8);
    $pdf->Cell(null,$a,utf8_decode("$".number_format($data->total,2)),'B',0,'R');
    $pdf->SetFont('Helvetica','',6);
+   $pdf->ln();
+   // letra
+   $pdf->SetFont('Helvetica','B',7);
+   $pdf->cell(null,$a,utf8_decode("Total con letra: "),0,1);
+   $pdf->SetFont('Helvetica','',6);
+   $pdf->multicell(null,2.5,utf8_decode("Total con letra"),0);
+   $pdf->SetFont('Helvetica','B',7);
+   $pdf->cell(null,$a,utf8_decode("Sello digital del CFDI: "),0,1);
+   $pdf->SetFont('Helvetica','',6);
+   $pdf->multicell(null,2.5,utf8_decode($data->sello),0);
+   $pdf->SetFont('Helvetica','B',7);
+   $pdf->cell(null,$a,utf8_decode("Sello digital del SAT: "),0,1);
+   $pdf->SetFont('Helvetica','',6);
+   $pdf->multicell(null,2.5,utf8_decode($data->sellosat),0);
    //
    // end body
    //

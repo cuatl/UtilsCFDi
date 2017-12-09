@@ -96,6 +96,7 @@
          $datos->id = $tfd->getAttribute('UUID');
          //$datos->fechatimbrado = date('Y-m-d',strtotime($tfd->getAttribute('FechaTimbrado')));
          $datos->fechatimbrado = $tfd->getAttribute('FechaTimbrado');
+         $datos->sellosat = $tfd->getAttribute('SelloSAT');
          //$datos->fecha = date('Y-m-d',strtotime($datos->fecha));
          return $datos;
       }
