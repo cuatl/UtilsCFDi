@@ -91,8 +91,10 @@ $CAT->conceptos = [
       "cantidad"   => "Cantidad",
       "unidad"     => "ClaveUnidad",
       "descripcion"=> "Descripcion",
-      "valorunitario"=> "ValorUnitario",
+      "valorunitario"=>"ValorUnitario",
       "importe"    => "Importe",
+      "noidentifica"=>"NoIdentificacion",
+      "lunidad"    => "Unidad",
    ],
 ];
 //conceptos impuestos

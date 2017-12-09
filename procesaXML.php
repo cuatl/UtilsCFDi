@@ -91,30 +91,12 @@
             }
          }
          $datos->conceptos = $losconceptos;
-         //impuestos
-         /*
-         $imp= $root->getElementsByTagName('Impuestos');
-         $impuestos = new stdclass;
-         foreach($imp AS $t) {
-            $i=0;
-            foreach(["TotalImpuestosRetenidos","TotalImpuestosTrasladados"]AS $a) {
-               $impuestos->{$a} = $t->getAttribute($a);
-               foreach(['Traslado' => 'trasladados','Retencion' => 'retenidos'] AS $x=>$y) {
-                  $traslado = $imp->item(0)->getElementsByTagName($x); 
-                  $ii = 0;
-                  foreach($traslado as $t) {
-                     $ii++; 
-                     $impuestos->{$y}[$ii] = new stdclass;
-                     foreach($this->cat->ci["3.3"] AS $a=>$b) {
-                        if(isset($this->cat->ci[$ver][$a])) {
-                           $impuestos->{$y}[$ii]->{$a} = $t->getAttribute($this->cat->ci[$ver][$a]);
-                        }
-                     }
-                  }
-               }
-            }
-         }
-         */
+         //
+         $tfd = $root->getElementsByTagName('TimbreFiscalDigital')->item(0);
+         $datos->id = $tfd->getAttribute('UUID');
+         //$datos->fechatimbrado = date('Y-m-d',strtotime($tfd->getAttribute('FechaTimbrado')));
+         $datos->fechatimbrado = $tfd->getAttribute('FechaTimbrado');
+         //$datos->fecha = date('Y-m-d',strtotime($datos->fecha));
          return $datos;
       }
    }
