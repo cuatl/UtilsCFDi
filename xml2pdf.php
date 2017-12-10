@@ -24,7 +24,7 @@
          $this->setY(10);
          $this->Image("siglo.png",null,null,60);
          // Line break
-         $this->Ln(1);
+         $this->Ln(3);
          //emite
          $ancho=105;
          $this->setTextColor(0,0,0);
@@ -35,7 +35,7 @@
          $this->Cell(30,5,utf8_decode('Folio fiscal:'),'B',0,'R');
          $this->SetFont('Helvetica','B',8);
          $this->SetTextColor(153,0,0);
-         $this->Cell(null,5,strtoupper($d->id),'B',0,'L');
+         $this->Cell(null,5,$d->id,'B',0,'L');
          $this->ln();
          //segunda fila
          $this->SetFont('Helvetica','',7);
@@ -94,8 +94,16 @@
          $this->Cell(0,8,utf8_decode('Página ').$this->PageNo().' de {nb}',0,0,'R');
       }
    }
+   function qr($uuid, $rfcemisor, $rfcreceptor, $total, $sello) {
+      $url="https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?";
+      $cadena = sprintf("%s&id=%s&re=%s&rr=%s&tt=%s&fe=%s",$url,$uuid,$rfcemisor,$rfcreceptor,$total,substr($sello,-8));
+      $cmd = "qrencode -o /tmp/".escapeshellcmd($uuid).".png -l M \"$cadena\"";
+      $cmd = `$cmd`;
+      return ["/tmp/".escapeshellcmd($uuid).".png",$cadena];
+   }
    //procesamos XML
-   $xml= file_get_contents("WW-9434.xml");
+   $tmp = (isset($_GET['id'])&&!empty($_GET['id'])) ? escapeshellcmd($_GET['id']) : "WW-9434";
+   $xml= file_get_contents($tmp.".xml");
    $cfdi = new cfdi();
    $cfdi->xml = $xml;
    $data = $cfdi->run();
@@ -108,11 +116,10 @@
    //
    // body
    $pdf->ln();
-   $pdf->SetFillColor(247,247,249);
    $pdf->SetFillColor(239,249,255);
    $pdf->SetDrawColor(80,96,119);
    $pdf->SetFont('Helvetica','',7);
-   $pdf->Cell(null,5,utf8_decode("C O N C E P T O S"),'T',1,'C',1);
+   $pdf->Cell(null,5,utf8_decode("C O N C E P T O S"),'B',1,'C',0);
    $a=5;
    //cabecera conceptos
    $pdf->SetFont('Helvetica','B',6);
@@ -124,9 +131,10 @@
    $pdf->Cell(17,$a,utf8_decode('Importe'),'B',0,'R',1);
    $pdf->Cell(null,$a,utf8_decode('Descripción'),'B',0,'C',1);
    $pdf->ln();
-   $pdf->SetFont('Helvetica','',8);
    $impuestos=0;
+   $pdf->SetFillColor(247,247,249);
    foreach($data->conceptos AS $k) {
+      $pdf->SetFont('Helvetica','',8);
       $pdf->setTextColor(0,0,0);
       $pdf->Cell(18,$a,utf8_decode($k->clave),"R",0,'C');
       $pdf->Cell(15,$a,number_format($k->cantidad,2),"R",0,'R');
@@ -136,13 +144,14 @@
       $pdf->Cell(17,$a,"$".number_format($k->valorunitario,2),"R",0,'R');
       $pdf->multicell(100,$a,utf8_decode($k->descripcion),0);
       if(isset($k->trasladados) && !empty($k->trasladados)) {
+         $pdf->SetFont('Helvetica','',6);
          $pdf->setTextColor(102,102,102);
          foreach($k->trasladados AS $imp) {
-            $pdf->Cell(40,$a,utf8_decode("IMPUESTO TRASLADADO"),0,0,'R',1);
+            $pdf->Cell(38,$a,utf8_decode("IMPUESTO TRASLADADO"),0,0,'R',1);
             $pdf->Cell(30,$a,utf8_decode("Base: $".number_format($imp->base,2)),0,0,null,1);
             $pdf->Cell(30,$a,utf8_decode("Impuesto: ".$imp->impuesto),0,0,null,1);
             $pdf->Cell(30,$a,utf8_decode("Tipo o factor: ".$imp->factor),0,0,null,1);
-            $pdf->Cell(30,$a,utf8_decode("Tasa o cuota: ".$imp->tasacuota),0,0,null,1);
+            $pdf->Cell(32,$a,utf8_decode("Tasa o cuota: ".$imp->tasacuota),0,0,null,1);
             $pdf->Cell(null,$a,utf8_decode("Importe: $".number_format($imp->importe,2)),0,0,null,1);
             $impuestos += $imp->importe;
             $pdf->ln();
@@ -152,6 +161,7 @@
    $pdf->ln(4);
    /// moneda, totales
    //moneda , subtotal
+   $pdf->setTextColor(0,0,0);
    $pdf->Cell(25,$a,'Moneda:',0,0,'R');
    $pdf->Cell(40,$a,utf8_decode($data->moneda),0,0);
    $pdf->Cell(70);
@@ -195,6 +205,21 @@
    $pdf->cell(null,$a,utf8_decode("Sello digital del SAT: "),0,1);
    $pdf->SetFont('Helvetica','',6);
    $pdf->multicell(null,2.5,utf8_decode($data->sellosat),0);
+   $pdf->ln();
+   // QR
+   $qr = qr($data->id, $data->emisor->rfc, $data->receptor->rfc, $data->total, $data->sello);
+   $pdf->Cell(40,$a, $pdf->Image($qr[0],$pdf->GetX(), $pdf->GetY()-1, 40),0,0,0,false);
+   $pdf->SetFont('Helvetica','B',7);
+   $pdf->Cell(40,$a, utf8_decode("Cadena Original del complemento de certificación digital del SAT"),0,1);
+   $pdf->SetFont('Helvetica','',6);
+   $pdf->Cell(40);
+   $data->cadena = sprintf("||%s|%s|%s|%s|%s|%s||",$data->tfdversion,$data->id,$data->fechatimbrado,$data->tfdrfc,$data->sello,$data->tfdnosat);
+   $pdf->multicell(null,2.5,utf8_decode($data->cadena),0);
+   //
+   $pdf->ln();
+   $pdf->SetFont('Helvetica','',5);
+   $pdf->setTextColor(160,160,160);
+   $pdf->cell(null,3,$qr[1],0,0,'C');
    //
    // end body
    //

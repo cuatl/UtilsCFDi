@@ -93,17 +93,21 @@
          $datos->conceptos = $losconceptos;
          //
          $tfd = $root->getElementsByTagName('TimbreFiscalDigital')->item(0);
-         $datos->id = $tfd->getAttribute('UUID');
+         $datos->id = strtoupper($tfd->getAttribute('UUID'));
          //$datos->fechatimbrado = date('Y-m-d',strtotime($tfd->getAttribute('FechaTimbrado')));
          $datos->fechatimbrado = $tfd->getAttribute('FechaTimbrado');
          $datos->sellosat = $tfd->getAttribute('SelloSAT');
+         $datos->tfdversion = $tfd->getAttribute('Version');
+         $datos->tfdrfc     = $tfd->getAttribute('RfcProvCertif');
+         $datos->tfdnosat   = $tfd->getAttribute('NoCertificadoSAT');
          //$datos->fecha = date('Y-m-d',strtotime($datos->fecha));
          return $datos;
       }
    }
    /* ejemplo */
    if(isset($argv[1]) && isset($argv[1]) == 'TRUE') {
-      $xml= file_get_contents("WW-9434.xml");
+      //$xml= file_get_contents("WW-9434.xml");
+      $xml= file_get_contents("test.xml");
       $cfdi = new cfdi();
       $cfdi->xml = $xml;
       $data = $cfdi->run();
