@@ -6,10 +6,6 @@
       // Cabecera de página
       function Header() {
          $this->SetFont('Helvetica','B',14);
-         /*
-         $this->SetDrawColor(0,0,0);
-         $this->SetLineWidth(.05);
-         */
          $d = $GLOBALS['data'];
          $this->SetLineWidth(.05);
          if(isset($d->serie) && !empty($d->serie)) {
@@ -22,7 +18,11 @@
             $this->Cell(0,6,"FACTURA",null,1,'R');
          } 
          $this->setY(10);
-         $this->Image("siglo.png",null,null,60);
+         if(preg_match("/(FPT)/",$d->serie)) {
+            $this->Image("logocd.png",null,null,60);
+         } else {
+            $this->Image("siglo.png",null,null,60);
+         }
          // Line break
          $this->Ln(3);
          //emite
@@ -87,6 +87,7 @@
          $this->SetLineWidth(.05);
          //$this->SetTextColor(190,190,190);
          $this->SetFont('Helvetica','',6);
+         $this->Cell(null,5,utf8_decode('Para mayor información sobre el trato de sus datos personales por favor visite https://elsiglo.mx/privacidad'),0,1);
          $this->Cell(30,8,utf8_decode('ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI'),'T',0);
          $this->SetTextColor(0,0,0);
          $this->SetFont('Helvetica','',7);
@@ -110,6 +111,9 @@
    //print_r($data); die();
    // Creación del objeto de la clase heredada
    $pdf = new PDF("P","mm","Letter");
+   $pdf->SetCreator("fTools by @toro https://tar.mx/",1);
+   $pdf->SetTitle("Factura ".$data->serie.$data->folio);
+   $pdf->SetTopMargin(5);
    $pdf->AliasNbPages();
    $pdf->AddPage();
    //
@@ -141,8 +145,8 @@
       $pdf->Cell(15,$a,utf8_decode($k->unidad),"R",0,'R');
       $pdf->Cell(17,$a,utf8_decode($k->lunidad),"R",0,'R');
       $pdf->Cell(17,$a,"$".number_format($k->valorunitario,2),"R",0,'R');
-      $pdf->Cell(17,$a,"$".number_format($k->valorunitario,2),"R",0,'R');
-      $pdf->multicell(100,$a,utf8_decode($k->descripcion),0);
+      $pdf->Cell(17,$a,"$".number_format($k->valorunitario,2),null,0,'R');
+      $pdf->multicell(100,$a,utf8_decode($k->descripcion),'LB');
       if(isset($k->trasladados) && !empty($k->trasladados)) {
          $pdf->SetFont('Helvetica','',6);
          $pdf->setTextColor(102,102,102);
@@ -156,7 +160,7 @@
             $impuestos += $imp->importe;
             $pdf->ln();
          }
-      } else $pdf->ln();
+      } //else $pdf->ln();
    }
    $pdf->ln(4);
    /// moneda, totales
@@ -183,6 +187,10 @@
       $pdf->Cell(70);
       $pdf->Cell(40,$a,utf8_decode("IVA ".$data->conceptos[1]->trasladados[1]->tasacuota."%:"),0,0,'R');
       $pdf->Cell(null,$a,utf8_decode("$".number_format($impuestos,2)),'B',0,'R');
+   } else {
+      $pdf->Cell(70);
+      $pdf->Cell(40,$a,utf8_decode("IVA 0%:"),0,0,'R');
+      $pdf->Cell(null,$a,utf8_decode("$".number_format(0,2)),'B',0,'R');
    }
    $pdf->ln();
    // total
@@ -209,18 +217,36 @@
    // QR
    $qr = qr($data->id, $data->emisor->rfc, $data->receptor->rfc, $data->total, $data->sello);
    $pdf->Cell(40,$a, $pdf->Image($qr[0],$pdf->GetX(), $pdf->GetY()-1, 40),0,0,0,false);
+   // cadena
    $pdf->SetFont('Helvetica','B',7);
    $pdf->Cell(40,$a, utf8_decode("Cadena Original del complemento de certificación digital del SAT"),0,1);
    $pdf->SetFont('Helvetica','',6);
    $pdf->Cell(40);
    $data->cadena = sprintf("||%s|%s|%s|%s|%s|%s||",$data->tfdversion,$data->id,$data->fechatimbrado,$data->tfdrfc,$data->sello,$data->tfdnosat);
    $pdf->multicell(null,2.5,utf8_decode($data->cadena),0);
+   $pdf->ln();
+   // 
+   $pdf->Cell(40);
+   $pdf->SetFont('Helvetica','B',7);
+   $pdf->Cell(45,$a,utf8_decode("No. de serie del certificado SAT"),0,0);
+   $pdf->SetFont('Helvetica','',6);
+   $pdf->Cell(null,$a,utf8_decode($data->tfdnosat),0,0);
+   $pdf->ln();
    //
    $pdf->ln();
+   $pdf->Cell(40);
    $pdf->SetFont('Helvetica','',5);
    $pdf->setTextColor(160,160,160);
-   $pdf->cell(null,3,$qr[1],0,0,'C');
+   $pdf->cell(null,3,$qr[1],0,0);
+   $pdf->ln(12);
    //
    // end body
    //
+   // pagaré
+   if(preg_match("/(FPT)/",$data->serie)) {
+      $pdf->setTextColor(60,60,60);
+      $pdf->SetFont('Helvetica','',6);
+      $pagare = sprintf("DEBO(EMOS) Y PAGARE(MOS) INCONDICIONALMENTE ESTE PAGARE A SU VENCIMIENTO A     LA ORDEN DE CELSA DISTRIBUCIONES, SA DE CV LA CANTIDAD DE: \$_____________ (___________________________________________) EN TORREON, COAH., MEXICO O EN LA PLAZA QUE ELIJA EL ACREEDOR DEL DIA ______ DE _________________ DE ________ VALOR RECIBIDA A MI (NUESTRA) ENTERA SATISFACCION. ESTE PAGARE CAUSARA INTERES MORATORIO A RAZON DEL _________%% MENSUAL PAGADERO JUNTAMENTE CON EL PRINCIPAL.");
+      $pdf->multicell(null,3,utf8_decode($pagare),0,1);
+   }
    $pdf->Output();
