@@ -18,11 +18,7 @@
             $this->Cell(0,6,"FACTURA",null,1,'R');
          } 
          $this->setY(10);
-         if(preg_match("/(FPT)/",$d->serie)) {
-            $this->Image("logocd.png",null,null,60);
-         } else {
-            $this->Image("siglo.png",null,null,60);
-         }
+         $this->Image("siglo.png",null,null,60);
          // Line break
          $this->Ln(3);
          //emite
@@ -91,7 +87,7 @@
          $this->Cell(30,8,utf8_decode('ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI'),'T',0);
          $this->SetTextColor(0,0,0);
          $this->SetFont('Helvetica','',7);
-         $this->Cell(0,8,'https://www.elsiglodetorreon.com.mx','T',0,'C');
+         $this->Cell(0,8,'https://tar.mx','T',0,'C');
          $this->Cell(0,8,utf8_decode('Página ').$this->PageNo().' de {nb}',0,0,'R');
       }
    }
@@ -103,8 +99,7 @@
       return ["/tmp/".escapeshellcmd($uuid).".png",$cadena];
    }
    //procesamos XML
-   $tmp = (isset($_GET['id'])&&!empty($_GET['id'])) ? escapeshellcmd($_GET['id']) : "WW-9434";
-   $xml= file_get_contents($tmp.".xml");
+   $xml= file_get_contents("test.xml");
    $cfdi = new cfdi();
    $cfdi->xml = $xml;
    $data = $cfdi->run();
@@ -243,10 +238,4 @@
    // end body
    //
    // pagaré
-   if(preg_match("/(FPT)/",$data->serie)) {
-      $pdf->setTextColor(60,60,60);
-      $pdf->SetFont('Helvetica','',6);
-      $pagare = sprintf("DEBO(EMOS) Y PAGARE(MOS) INCONDICIONALMENTE ESTE PAGARE A SU VENCIMIENTO A     LA ORDEN DE CELSA DISTRIBUCIONES, SA DE CV LA CANTIDAD DE: \$_____________ (___________________________________________) EN TORREON, COAH., MEXICO O EN LA PLAZA QUE ELIJA EL ACREEDOR DEL DIA ______ DE _________________ DE ________ VALOR RECIBIDA A MI (NUESTRA) ENTERA SATISFACCION. ESTE PAGARE CAUSARA INTERES MORATORIO A RAZON DEL _________%% MENSUAL PAGADERO JUNTAMENTE CON EL PRINCIPAL.");
-      $pdf->multicell(null,3,utf8_decode($pagare),0,1);
-   }
    $pdf->Output();
