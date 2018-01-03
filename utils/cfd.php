@@ -41,10 +41,12 @@
          }
          //
          $data->impuestos = new stdclass;
-         foreach($this->xml->Impuestos->attributes() AS $k=>$v) {
-            if(array_search($k,$this->c->impuestos)) {
-               $key = array_search($k,$this->c->impuestos);
-               $data->impuestos->{$key} = (float)$v;
+         if(isset($this->xml->Impuestos)) {
+            foreach($this->xml->Impuestos->attributes() AS $k=>$v) {
+               if(array_search($k,$this->c->impuestos)) {
+                  $key = array_search($k,$this->c->impuestos);
+                  $data->impuestos->{$key} = (float)$v;
+               }
             }
          }
          //conceptos e impuestos
@@ -58,7 +60,7 @@
                   @$conceptos[$i]->{$key} = (string)$b;
                }
             }
-            $conceptos[$i]->impuestos = new stdclass;
+            @$conceptos[$i]->impuestos = new stdclass;
             if(isset($v->Impuestos->Traslados->Traslado)) {
                foreach($v->Impuestos->Traslados->Traslado as $traslado) {
                   foreach($traslado->attributes() AS $a=>$b) {
@@ -95,13 +97,17 @@
          }
          $data->conceptos = $conceptos;
          $data->complemento = new stdclass;
-         foreach($this->xml->Complemento->TimbreFiscalDigital->Attributes() AS $a=>$b) {
-            if(array_search($a,$this->c->complemento)) {
-               $key = array_search($a,$this->c->complemento);
-               $data->complemento->{$key} = (string)$b;
+         if(isset($this->xml->Complemento->TimbreFiscalDigital)) {
+            foreach($this->xml->Complemento->TimbreFiscalDigital->Attributes() AS $a=>$b) {
+               if(array_search($a,$this->c->complemento)) {
+                  $key = array_search($a,$this->c->complemento);
+                  $data->complemento->{$key} = (string)$b;
+               }
             }
          }
-         $data->id = strtoupper($data->complemento->uuid);
+         if(isset($data->complemento->uuid)) {
+            $data->id = strtoupper($data->complemento->uuid);
+         }
          //
          //print_r($data);
          return $data;
